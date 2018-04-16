@@ -51,7 +51,7 @@ var Game = function(){
         nextDir:"right"
     }
     this.gameLight = new THREE.DirectionalLight(0xffffff, 1.1);
-    
+    this.gameLight.castShadow = true
 };
 
 Game.prototype={
@@ -80,10 +80,17 @@ Game.prototype={
     },
     createCube:function(){
         var _self = this;
+
+        var geo = new THREE.PlaneGeometry(100,50,32,32);
+        var mat = new THREE.MeshBasicMaterial({color:0x666666,side:THREE.DoubleSize});
+        var plane = new THREE.Mesh(geo,mat);
+        plane.receiveShadow = true; // 启用接受阴影选项
+
         var texture  = new THREE.TextureLoader().load('assets/images/tt1.jpg');
         var material = new THREE.MeshBasicMaterial({map:texture});
         var geometry = new THREE.BoxGeometry(this.conf.cubeWidth, this.conf.cubeHeight, this.conf.cubeDeep,1,1,1);
         var brick    = new THREE.Mesh(geometry,material);
+        brick.castShadow = true;
         if (this.cubes.length) {
             // var random = Math.random()
             // this.cubeStat.nextDir = random > 0.5 ? 'left' : 'right';
@@ -126,7 +133,7 @@ Game.prototype={
     //     // cube.rotation.z +=0.01;
     // },
     setLight:function(){
-        this.gameLight.position.set(3, 10, 5)
+        this.gameLight.position.set(3, 4, 5)
         this.scene.add(this.gameLight)
     },
     setCamera:function(){
@@ -181,6 +188,7 @@ Game.prototype={
     setScene:function(){
         this.renderer.setSize(this.screen.width,this.screen.height);
         this.renderer.setClearColor(this.conf.bgColor);
+        this.renderer.shadowMapEnabled = true;
         document.body.appendChild(this.renderer.domElement);
     },
     _Helpers: function() {
