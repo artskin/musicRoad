@@ -14,11 +14,23 @@
     </style>
 </head>
 <body>
-<script type="module">
-  import {Game} from './js/game.js'
-  var playMusic = new Game();
-  playMusic.init();
-  // 
-  // new game3d()
-</script>
+  <script src="./node_modules/three/examples/js/libs/stats.min.js"></script>
+  <script src="./node_modules/three/examples/js/libs/tween.min.js"></script>
+  <script type="module">
+    import {Game} from './js/game.js'
+    var playMusic = new Game();
+    playMusic.init();
+    
+    //监控
+    var stats = new Stats();
+    stats.showPanel( 1 ); // 0: fps, 1: ms, 2: mb, 3+: custom
+    document.body.appendChild( stats.dom );
+    function animate() {
+      stats.begin();
+      // monitored code goes here
+      stats.end();
+      requestAnimationFrame( animate );
+    }
+    requestAnimationFrame( animate );
+  </script>
 </body>
