@@ -1,6 +1,8 @@
-<!DOCTYPE html> 
+<!DOCTYPE html>
+<html>
 <head> 
-	<meta charset="UTF-8" />
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no">
 	<title>音乐大师</title>
     <style>
@@ -14,130 +16,158 @@
     </style>
 </head>
 <body>
-    <script src="./js/libs/three.js"></script>
-  <script src="./js/libs/stats.min.js"></script>
-  <script src="./js/libs/tween.min.js"></script>
-  <script type="module">
-    import {Game} from './js/game.js'
-    var playMusic = new Game();
-    playMusic.init();
-    
-    //监控
-    // var stats = new Stats();
-    // stats.showPanel( 1 ); // 0: fps, 1: ms, 2: mb, 3+: custom
-    // document.body.appendChild( stats.dom );
-    // function animate() {
-    //   stats.begin();
-    //   // monitored code goes here
-    //   stats.end();
-    //   requestAnimationFrame( animate );
-    // }
-    // requestAnimationFrame( animate );
+  <div id="gamedemo"></div>
+<script src="./js/libs/three.js"></script>
+<script src="./js/libs/stats.min.js"></script>
+<script src="./js/libs/dat.gui.min.js"></script>
+<script src="./js/libs/tween.min.js"></script>
+<script type="module">
+  import {Game} from './js/game.js'
+  var playMusic = new Game();
 
-    ///------
-    var container, stats;
-			var camera, scene, renderer;
-			var geometry, root;
-			var mouseX = 0, mouseY = 0;
-			var windowHalfX = window.innerWidth / 2;
-			var windowHalfY = window.innerHeight / 2;
-			document.addEventListener( 'mousemove', onDocumentMouseMove, false );
-			//init();
-			animate();
-			function init() {
-				container = document.createElement( 'div' );
-				document.body.appendChild( container );
-				camera = new THREE.PerspectiveCamera( 60, window.innerWidth / window.innerHeight, 1, 15000 );
-				camera.position.z = 6000;
-				scene = new THREE.Scene();
-				scene.background = new THREE.Color( 0xffffff );
-				var geometry = new THREE.BoxGeometry( 100, 100, 100 );
-				var material = new THREE.MeshNormalMaterial();
-				root = new THREE.Mesh( geometry, material );
-				root.position.x = 1000;
-				scene.add( root );
-				var amount = 200, object, parent = root;
-				for ( var i = 0; i < amount; i ++ ) {
-					object = new THREE.Mesh( geometry, material );
-					object.position.x = 100;
-					parent.add( object );
-					parent = object;
-				}
-				parent = root;
-				for ( var i = 0; i < amount; i ++ ) {
-					object = new THREE.Mesh( geometry, material );
-					object.position.x = - 100;
-					parent.add( object );
-					parent = object;
-				}
-				parent = root;
-				for ( var i = 0; i < amount; i ++ ) {
-					object = new THREE.Mesh( geometry, material );
-					object.position.y = - 100;
-					parent.add( object );
-					parent = object;
-				}
-				parent = root;
-				for ( var i = 0; i < amount; i ++ ) {
-					object = new THREE.Mesh( geometry, material );
-					object.position.y = 100;
-					parent.add( object );
-					parent = object;
-				}
-				parent = root;
-				for ( var i = 0; i < amount; i ++ ) {
-					object = new THREE.Mesh( geometry, material );
-					object.position.z = - 100;
-					parent.add( object );
-					parent = object;
-				}
-				parent = root;
-				for ( var i = 0; i < amount; i ++ ) {
-					object = new THREE.Mesh( geometry, material );
-					object.position.z = 100;
-					parent.add( object );
-					parent = object;
-				}
-				renderer = new THREE.WebGLRenderer();
-				renderer.setPixelRatio( window.devicePixelRatio );
-				renderer.setSize( window.innerWidth, window.innerHeight );
-				container.appendChild( renderer.domElement );
-				stats = new Stats();
-				container.appendChild( stats.dom );
-				//
-				window.addEventListener( 'resize', onWindowResize, false );
-			}
-			function onWindowResize() {
-				windowHalfX = window.innerWidth / 2;
-				windowHalfY = window.innerHeight / 2;
-				camera.aspect = window.innerWidth / window.innerHeight;
-				camera.updateProjectionMatrix();
-				renderer.setSize( window.innerWidth, window.innerHeight );
-			}
-			function onDocumentMouseMove(event) {
-				mouseX = ( event.clientX - windowHalfX ) * 10;
-				mouseY = ( event.clientY - windowHalfY ) * 10;
-			}
-			//
-			function animate() {
-				requestAnimationFrame( animate );
-				render();
-				stats.update();
-			}
-			function render() {
-				var time = Date.now() * 0.001;
-				var rx = Math.sin( time * 0.7 ) * 0.2;
-				var ry = Math.sin( time * 0.3 ) * 0.1;
-				var rz = Math.sin( time * 0.2 ) * 0.1;
-				camera.position.x += ( mouseX - camera.position.x ) * .05;
-				camera.position.y += ( - mouseY - camera.position.y ) * .05;
-				camera.lookAt( scene.position );
-				root.traverse( function ( object ) {
-					object.rotation.x = rx;
-					object.rotation.y = ry;
-					object.rotation.z = rz;
-				} );
-				renderer.render( scene, camera );
-			}
-  </script>
+  var guiControls = {
+    rotationZ:0
+  }
+  var datGUI = new dat.GUI();
+  datGUI.add(guiControls,'rotationZ',0,0.2);
+
+  playMusic.init(guiControls);
+  
+  //监控
+  // var stats = new Stats();
+  // stats.showPanel( 1 ); // 0: fps, 1: ms, 2: mb, 3+: custom
+  // document.body.appendChild( stats.dom );
+  // function animate() {
+  //   stats.begin();
+  //   // monitored code goes here
+  //   stats.end();
+  //   requestAnimationFrame( animate );
+  // }
+  // requestAnimationFrame( animate );
+
+  ///------
+  //存放有所有需要改变的属性的对象
+  var guiConf;
+  function datGUIsys(){
+    guiConf = {
+      rotationSpeed : 0.5,
+      positionZ : 3000
+    };
+
+    //创建dat.GUI，传递并设置属性
+    var datGUI = new dat.GUI();
+    datGUI.add(guiConf, 'rotationSpeed', 0.5, 3);
+    datGUI.add(guiConf, 'positionZ', 2000, 4000);
+  }
+  //datGUIsys()
+  
+  
+  var container, stats;
+  var camera, scene, renderer;
+  var geometry, root;
+  var mouseX = 0, mouseY = 0;
+  var windowHalfX = window.innerWidth / 2;
+  var windowHalfY = window.innerHeight / 2;
+  document.addEventListener( 'mousemove', onDocumentMouseMove, false );
+  //init();
+  //animate();
+  function init() {
+    container = document.getElementById("gamedemo");
+    camera = new THREE.PerspectiveCamera( 60, window.innerWidth / window.innerHeight, 1, 15000 );
+    camera.position.z = guiConf.positionZ;
+    scene = new THREE.Scene();
+    scene.background = new THREE.Color( 0xffffff );
+    var geometry = new THREE.BoxGeometry( 100, 100, 100 );
+    var material = new THREE.MeshNormalMaterial();
+    root = new THREE.Mesh( geometry, material );
+    root.position.x = 10;
+    scene.add( root );
+    var amount = 2, object, parent = root;
+    for ( var i = 0; i < amount; i ++ ) {
+      object = new THREE.Mesh( geometry, material );
+      console.log("--",object)
+      object.position.x = 100;
+      parent.add( object );
+      parent = object;
+    }
+    console.log(object)
+    console.log(parent)
+    parent = root;
+    // for ( var i = 0; i < amount; i ++ ) {
+    //   object = new THREE.Mesh( geometry, material );
+    //   object.position.x = - 100;
+    //   parent.add( object );
+    //   parent = object;
+    // }
+    // parent = root;
+    // for ( var i = 0; i < amount; i ++ ) {
+    // 	object = new THREE.Mesh( geometry, material );
+    // 	object.position.y = - 100;
+    // 	parent.add( object );
+    // 	parent = object;
+    // }
+    // parent = root;
+    // for ( var i = 0; i < amount; i ++ ) {
+    // 	object = new THREE.Mesh( geometry, material );
+    // 	object.position.y = 100;
+    // 	parent.add( object );
+    // 	parent = object;
+    // }
+    // parent = root;
+    // for ( var i = 0; i < amount; i ++ ) {
+    // 	object = new THREE.Mesh( geometry, material );
+    // 	object.position.z = - 100;
+    // 	parent.add( object );
+    // 	parent = object;
+    // }
+    // parent = root;
+    // for ( var i = 0; i < amount; i ++ ) {
+    // 	object = new THREE.Mesh( geometry, material );
+    // 	object.position.z = 100;
+    // 	parent.add( object );
+    // 	parent = object;
+    // }
+    renderer = new THREE.WebGLRenderer();
+    renderer.setPixelRatio( window.devicePixelRatio );
+    renderer.setSize( window.innerWidth, window.innerHeight );
+    container.appendChild( renderer.domElement );
+    stats = new Stats();
+    container.appendChild( stats.dom );
+    //
+    window.addEventListener( 'resize', onWindowResize, false );
+  }
+  function onWindowResize() {
+    windowHalfX = window.innerWidth / 2;
+    windowHalfY = window.innerHeight / 2;
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize( window.innerWidth, window.innerHeight );
+  }
+  function onDocumentMouseMove(event) {
+    mouseX = ( event.clientX - windowHalfX ) * 10;
+    mouseY = ( event.clientY - windowHalfY ) * 10;
+  }
+  //
+  function animate() {
+    requestAnimationFrame( animate );
+    render();
+    stats.update();
+  }
+  function render() {
+    var time = Date.now() * 0.001;
+    var rx = Math.sin( time * 0.7 ) * 0.2;
+    var ry = Math.sin( time * 0.3 ) * 0.1;
+    var rz = Math.sin( time * 0.2 ) * 0.1;
+    camera.position.x += ( mouseX - camera.position.x ) * 0.05;
+    camera.position.y += ( - mouseY - camera.position.y ) * 0.05;
+    camera.lookAt( scene.position );
+    root.traverse( function ( object ) {
+      object.rotation.x = rx;
+      object.rotation.y = ry;
+      object.rotation.z = rz;
+    } );
+    renderer.render( scene, camera );
+  }
+</script>
 </body>
+</html>

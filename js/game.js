@@ -50,17 +50,20 @@ var Game = function(){
     // );
     
     this.songArr = [6,9,10,9,9,9,9,9,10,5,9,5,5,5,9,9,4,5,5,5/*20*/,4,4,2,2,2,2,5,1,1,1/*30*/,3,5,5,5,5,5,5,5,5,5/*40*/,5,2,2,2,2,2,2,2,2,2/*50*/,4,4,2,2,2,2,5,2,3,3/*60*/,2,2,2,2,2,4,4,4,4,4/*70*/,4,4,4,4,5,5,5,5,5,5,10,10];
-    this.songArr = [4,2,3,5];
+    this.songArr = [4,2,3];
+    console.log(this.songArr)
     this.cubes = [];
     this.cubeStat = {
         nextDir:"right"
     }
+    this.roadsGroup = new THREE.Group()
     
 };
 
 Game.prototype={
-    init:function(){
+    init:function(guiControls){
         var _self = this;
+        this.conf.gui = guiControls;
         //场景渲染初始化
         this.setScene();
 
@@ -80,7 +83,7 @@ Game.prototype={
             var roadItem = this.songArr[j];
             var preroadItem = this.songArr[j-1];
             var Num = this.songArr[j] % 2;
-            console.log("第"+j+"组:"+roadItem+"个","偶数："+this.songArr[j] % 2)
+            console.log("组"+j,":个数",roadItem,"奇偶："+this.songArr[j] % 2)
             if(Num ==1){
                 this.cubeStat.nextDir = "left"
             }else{
@@ -147,29 +150,31 @@ Game.prototype={
             x: 1,
             y:1,
             z:1
-        }, 2000 )
-        .easing( TWEEN.Easing.Elastic.Out).start();
+        }, 1000 )
+        .easing( TWEEN.Easing.Bounce.Out).start();
         
-        console.log(this.cubes);
-        if (this.cubes.length >1) {
-            var prevIndex = this.cubes.length-1
+        //console.log(this.cubes);
+        if (this.roadsGroup.children.length >1) {
+            var prevIndex = this.roadsGroup.children.length
             console.log("this.cubes.length",this.cubes.length)
             // var random = Math.random()
             // this.cubeStat.nextDir = random > 0.5 ? 'left' : 'right';
             if (this.cubeStat.nextDir === 'left') {
-                mesh.position.x = this.cubes[prevIndex - 1].position.x - this.conf.cubeWidth-0.05;
-                mesh.position.z = this.cubes[prevIndex - 1].position.z;
+                mesh.position.x = this.roadsGroup.children[prevIndex - 1].position.x - this.conf.cubeWidth-0.05;
+                mesh.position.z = this.roadsGroup.children[prevIndex - 1].position.z;
             } else {
-                mesh.position.x = this.cubes[prevIndex - 1].position.x
-                mesh.position.z = this.cubes[prevIndex - 1].position.z - this.conf.cubeWidth-0.05
+                mesh.position.x = this.roadsGroup.children[prevIndex - 1].position.x
+                mesh.position.z = this.roadsGroup.children[prevIndex - 1].position.z - this.conf.cubeWidth-0.05
             }
         }
         
-        
-        setTimeout(function(){
-            _self.cubes.push(mesh)
-        },1000)
-        
+        // setTimeout(function(){
+            //_self.cubes.push(mesh)
+        // },1000)
+        this.roadsGroup.add(mesh)
+        console.log(this.roadsGroup.children);
+        this.scene.add(this.roadsGroup);
+        //this.scene.add(mesh);
         
         // var tween = new TWEEN.Tween(geometry.parameters)
         // .to({
@@ -188,12 +193,9 @@ Game.prototype={
         //     this.scene.remove(this.cubes.shift())
         // }
         //console.log(this.cubes);
-        this.scene.add(mesh);
-        
-        
         function cubeRender(){
             requestAnimationFrame(cubeRender);
-            //mesh.rotation.z +=0.01;
+            mesh.rotation.z +=_self.conf.gui.rotationZ;
             TWEEN.update();
             _self.renderer.render(_self.scene,_self.camera);
         }
