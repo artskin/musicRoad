@@ -1,4 +1,4 @@
-import * as THREE from './libs/three.module.js';
+//import * as THREE from './libs/three.module.js';
 
 
 var Game = function(){
@@ -6,14 +6,14 @@ var Game = function(){
         bgColor:0xdddddd,
         roadColor:0xffffff,
         playerColor:0x33ccff,
-        cubeWidth:5,
-        cubeHeight:2,
-        cubeDeep:5,
-        cubeSize:5,
+        cubeWidth:6,
+        cubeHeight:3,
+        cubeDeep:6,
+        cubeSize:6,
         jumperColor: 0x33ccff,
-        jumperWidth: 1, // jumper宽度
-        jumperHeight: 1, // jumper高度
-        jumperDeep: 1 // jumper深度
+        jumperWidth: 2, // jumper宽度
+        jumperHeight: 2, // jumper高度
+        jumperDeep: 2 // jumper深度
     }
     this.score = 0;
     this.screen = {
@@ -39,7 +39,7 @@ var Game = function(){
         1,
         10000
     )
-    this.renderer = new THREE.WebGLRenderer({antialias:true});
+    
     // this.camera.setViewOffset( 
     //     this.screen.width, 
     //     this.screen.height, 
@@ -50,8 +50,8 @@ var Game = function(){
     // );
     
     this.songArr = [6,9,10,9,9,9,9,9,10,5,9,5,5,5,9,9,4,5,5,5/*20*/,4,4,2,2,2,2,5,1,1,1/*30*/,3,5,5,5,5,5,5,5,5,5/*40*/,5,2,2,2,2,2,2,2,2,2/*50*/,4,4,2,2,2,2,5,2,3,3/*60*/,2,2,2,2,2,4,4,4,4,4/*70*/,4,4,4,4,5,5,5,5,5,5,10,10];
-    this.songArr = [4,2,3];
-    console.log(this.songArr)
+    this.songArr = [2,3,3,5,4];
+    //console.log(this.songArr)
     this.cubes = [];
     this.cubeStat = {
         nextDir:"right"
@@ -62,10 +62,16 @@ var Game = function(){
 
 Game.prototype={
     init:function(guiControls){
+        this.renderer = new THREE.WebGLRenderer({antialias:guiControls.antialiasVal});
         var _self = this;
         this.conf.gui = guiControls;
         //场景渲染初始化
         this.setScene();
+
+        // CONTROLS
+        var cameraControls = new THREE.OrbitControls( this.camera, this.renderer.domElement );
+        //cameraControls.addEventListener( 'change', this.render );
+
 
         // var roadItem = this.songArr[0]
         // console.log(this.songArr.splice(0,1))
@@ -82,18 +88,26 @@ Game.prototype={
         for(var j = 0;j<this.songArr.length;j++){
             var roadItem = this.songArr[j];
             var preroadItem = this.songArr[j-1];
-            var Num = this.songArr[j] % 2;
-            console.log("组"+j,":个数",roadItem,"奇偶："+this.songArr[j] % 2)
+            var Num = j % 2;
+            //console.log(j,"arr",roadItem)
             if(Num ==1){
                 this.cubeStat.nextDir = "left"
             }else{
                 this.cubeStat.nextDir = "right"
             }
             var Dir = this.cubeStat.nextDir;
-
+            var colorNum = Math.floor(Math.random()*85);
+            //console.log(colorNum)
+            var colorRandom = {
+                r:colorNum+80,
+                g:colorNum+100,
+                b:colorNum+100
+            }
             for (var i=0;i<roadItem;i++) {//循环创建小路块，并且加到所有小路快的数组中
                 //var newlu = new Lu(i,this.num);//i是为了让每个小路快不重叠，可以排序着显示
-                _self.createCube(Dir,_self.conf.roadColor,_self.conf.cubeSize);
+                //setTimeout(function(){
+                _self.createCube(Dir,colorRandom,_self.conf.cubeSize);
+                //},1000)
                 
                 //newlu.move();
             }
@@ -104,8 +118,8 @@ Game.prototype={
         this.setLight();
         this._render();
         
-        // this._updateCameraPos();
-        // this._updateCamera();
+        this._updateCameraPos();
+        //this._updateCamera();
         this.setCamera();
         
         //辅助工具
@@ -136,11 +150,12 @@ Game.prototype={
         this.jumper = mesh
         this.scene.add(this.jumper);
     },
-    createCube:function(Dir,color,size){
+    createCube:function(Dir,colorRandom,size){
         var _self = this;
+        
         // var texture  = new THREE.TextureLoader().load('assets/images/tt1.jpg');
         // var material = new THREE.MeshBasicMaterial({map:texture});
-        var materialColor = new THREE.MeshLambertMaterial({ color: color })
+        var materialColor = new THREE.MeshLambertMaterial({ color: new THREE.Color("rgb("+colorRandom.r+", "+colorRandom.g+", "+colorRandom.b+")") })
         var geometry = new THREE.BoxGeometry(size, this.conf.cubeHeight, size,1,1,1);
         var mesh     = new THREE.Mesh(geometry,materialColor);
         
@@ -154,9 +169,8 @@ Game.prototype={
         .easing( TWEEN.Easing.Bounce.Out).start();
         
         //console.log(this.cubes);
-        if (this.roadsGroup.children.length >1) {
-            var prevIndex = this.roadsGroup.children.length
-            console.log("this.cubes.length",this.cubes.length)
+        if (this.roadsGroup.children.length >0) {
+            var prevIndex = this.roadsGroup.children.length;
             // var random = Math.random()
             // this.cubeStat.nextDir = random > 0.5 ? 'left' : 'right';
             if (this.cubeStat.nextDir === 'left') {
@@ -167,12 +181,11 @@ Game.prototype={
                 mesh.position.z = this.roadsGroup.children[prevIndex - 1].position.z - this.conf.cubeWidth-0.05
             }
         }
-        
         // setTimeout(function(){
             //_self.cubes.push(mesh)
         // },1000)
         this.roadsGroup.add(mesh)
-        console.log(this.roadsGroup.children);
+        //console.log(this.roadsGroup.children);
         this.scene.add(this.roadsGroup);
         //this.scene.add(mesh);
         
@@ -208,18 +221,18 @@ Game.prototype={
     //     // cube.rotation.z +=0.01;
     // },
     setCamera:function(){
-        this.camera.position.set(30,100,20);
+        this.camera.position.set(30,100,30);
         this.camera.lookAt(this.cameraPos.current)
     },
     _updateCameraPos: function() {
-        var lastIndex = this.cubes.length - 1
+        var lastIndex = this.roadsGroup.children.length - 1
         var pointA = {
-            x: this.cubes[lastIndex].position.x,
-            z: this.cubes[lastIndex].position.z
+            x: this.roadsGroup.children[lastIndex].position.x,
+            z: this.roadsGroup.children[lastIndex].position.z
         }
         var pointB = {
-            x: this.cubes[lastIndex - 1].position.x,
-            z: this.cubes[lastIndex - 1].position.z
+            x: this.roadsGroup.children[lastIndex - 1].position.x,
+            z: this.roadsGroup.children[lastIndex - 1].position.z
         }
         var pointR = new THREE.Vector3()
         pointR.x = (pointA.x + pointB.x) / 2

@@ -18,6 +18,7 @@
 <body>
   <div id="gamedemo"></div>
 <script src="./js/libs/three.js"></script>
+<script src="./js/controls/OrbitControls.js"></script>
 <script src="./js/libs/stats.min.js"></script>
 <script src="./js/libs/dat.gui.min.js"></script>
 <script src="./js/libs/tween.min.js"></script>
@@ -26,11 +27,11 @@
   var playMusic = new Game();
 
   var guiControls = {
-    rotationZ:0
+    rotationZ:0,
+    antialiasVal:false
   }
-  var datGUI = new dat.GUI();
-  datGUI.add(guiControls,'rotationZ',0,0.2);
-
+  // var datGUI = new dat.GUI();
+  // datGUI.add(guiControls,'antialiasVal',true,false);
   playMusic.init(guiControls);
   
   //监控
