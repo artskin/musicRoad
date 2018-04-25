@@ -8,4 +8,4 @@ gh-pages/
 .idea/
 dev/
 typings/
-.htm
+*.htm
