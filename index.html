@@ -12,6 +12,7 @@
         width: 100%;
         height: 100%;
       }
+      #gammecanvas{max-width: 414px;height: 736px;margin: 0 auto;position: relative;}
       canvas{width: 100%;height: 100%}
       .start,
       .over{position:absolute;left: 0;top: 0;width: 100%;height: 100%; background: rgba(0,0, 0, .5);text-align: center}
@@ -25,15 +26,16 @@
     </style>
 </head>
 <body>
-  <div class="start">
-    <h1>Music Line</h1>
-    <button id="btn_start">开始</button>
+  <div id="gammecanvas">
+      <div class="start">
+        <h1>Music Line</h1>
+        <button id="btn_start">开始</button>
+      </div>
+      <div class="over">
+          <h2>您走了*%</h2>
+          <button id="btn_restart">重玩</button>
+      </div>
   </div>
-  <div class="over">
-      <h2>您走了*%</h2>
-      <button id="btn_restart">重玩</button>
-  </div>
-  <div id="gamedemo"></div>
 <script src="./js/libs/three.js"></script>
 <script src="./js/libs/three.interaction.js"></script>
 <script src="./js/controls/OrbitControls.js"></script>

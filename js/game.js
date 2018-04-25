@@ -365,9 +365,9 @@ Game.prototype={
     setScene:function(){
         this.renderer.setSize(this.screen.width,this.screen.height);
         this.renderer.setClearColor(this.conf.bgColor);
-        //this.renderer.setPixelRatio( window.devicePixelRatio );
+        this.renderer.setPixelRatio( window.devicePixelRatio );
         //this.renderer.shadowMap.enabled = true;
-        document.body.appendChild(this.renderer.domElement);
+        document.getElementById("gammecanvas").appendChild(this.renderer.domElement);
     },
     _Helpers: function() {
         //辅助网格
